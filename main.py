@@ -197,7 +197,7 @@ def Ai_Sec():
         st.stop()
 
     genai.configure(api_key=API_KEY)
-    MODEL_NAME = "gemini-3.5-flash"
+    MODEL_NAME = "gemini-3.5-flash"  
 
     st.title("🤖 Ai Assistant")
     st.markdown(
@@ -207,27 +207,38 @@ def Ai_Sec():
     if "history" not in st.session_state:
         st.session_state.history = []
 
-    def get_gemini_response(prompt, uploaded_file=None):
-        model = genai.GenerativeModel(MODEL_NAME)
-        if uploaded_file is not None:
-            file_data = {
-                "mime_type": uploaded_file.type,
-                "data": uploaded_file.getvalue()
-            }
-            response = model.generate_content([prompt, file_data])
-        else:
-            response = model.generate_content(prompt)
-        return response.text or "The AI returned an empty response."
-
     for role, msg in st.session_state.history:
         if role == "user":
             st.markdown(f"**You:** {msg}")
         else:
             st.markdown(f"**🤖 AI Assistant:** {msg}")
 
+    uploaded_file = st.file_uploader(
+        "Upload a file for the AI",
+        type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
+        accept_multiple_files=False,
+    )
+
+    if uploaded_file is not None:
+        st.caption(f"Attached: {uploaded_file.name}")
+        if uploaded_file.type.startswith("image/"):
+            st.image(uploaded_file, caption=uploaded_file.name)
+
     with st.form("ai_chat_form", clear_on_submit=True):
         user_input = st.text_input("Type your message here...")
         send = st.form_submit_button("Send")
+
+    def get_gemini_response(prompt, file_obj=None):
+        model = genai.GenerativeModel(MODEL_NAME)
+        if file_obj is not None:
+            file_data = {
+                "mime_type": file_obj.type,
+                "data": file_obj.getvalue()
+            }
+            response = model.generate_content([prompt, file_data])
+        else:
+            response = model.generate_content(prompt)
+        return response.text or "The AI returned an empty response."
 
     if send:
         if user_input.strip() or uploaded_file is not None:
@@ -235,28 +246,16 @@ def Ai_Sec():
 
             st.session_state.history.append(("user", prompt))
 
-            with st.spinner("AI Assistant is thinking..."):
+            with st.spinner("AI Assistant Is Thinking..."):
                 try:
                     reply = get_gemini_response(prompt, uploaded_file)
                 except Exception as e:
                     reply = f"Error: {e}"
 
-    uploaded_file = st.file_uploader(
-    "Upload a file for the AI",
-    type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
-    accept_multiple_files=False,
-    )
-
-    if uploaded_file is not None:
-        st.caption(f"Attached: {uploaded_file.name}")
-
-        if uploaded_file.type.startswith("image/"):
-            st.image(uploaded_file, caption=uploaded_file.name)
-
             st.session_state.history.append(("bot", reply))
             st.rerun()
         else:
-            st.warning("Please enter a message or upload a file.")
+            st.warning("Please Enter a Message Or Upload a File.")
            
 
 

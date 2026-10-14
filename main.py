@@ -180,7 +180,7 @@ def calc():
 
 def Ai_Sec():
     load_dotenv()
-    API_KEY = st.secrets(GEMINI_API_KEY)
+    API_KEY = os.env("GEMINI_API_KEY")
 
     if not API_KEY:
         st.error("Missing GEMINI_API_KEY in .env file.")

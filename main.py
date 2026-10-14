@@ -229,18 +229,6 @@ def Ai_Sec():
         user_input = st.text_input("Type your message here...")
         send = st.form_submit_button("Send")
 
-    uploaded_file = st.file_uploader(
-        "Upload a file for the AI",
-        type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
-        accept_multiple_files=False,
-    )
-
-    if uploaded_file is not None:
-        st.caption(f"Attached: {uploaded_file.name}")
-
-        if uploaded_file.type.startswith("image/"):
-            st.image(uploaded_file, caption=uploaded_file.name)
-
     if send:
         if user_input.strip() or uploaded_file is not None:
             prompt = user_input.strip() or "Describe this uploaded file."
@@ -252,6 +240,18 @@ def Ai_Sec():
                     reply = get_gemini_response(prompt, uploaded_file)
                 except Exception as e:
                     reply = f"Error: {e}"
+
+        uploaded_file = st.file_uploader(
+        "Upload a file for the AI",
+        type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
+        accept_multiple_files=False,
+    )
+
+    if uploaded_file is not None:
+        st.caption(f"Attached: {uploaded_file.name}")
+
+        if uploaded_file.type.startswith("image/"):
+            st.image(uploaded_file, caption=uploaded_file.name)
 
             st.session_state.history.append(("bot", reply))
             st.rerun()

@@ -183,6 +183,15 @@ def Ai_Sec():
     API_KEY = os.getenv("GEMINI_API_KEY")
 
     if not API_KEY:
+        try:
+            if "GEMINI_API_KEY" in st.secrets:
+                API_KEY = st.secrets["GEMINI_API_KEY"]
+            elif "Gemini" in st.secrets and "GEMINI_API_KEY" in st.secrets["Gemini"]:
+                API_KEY = st.secrets["Gemini"]["GEMINI_API_KEY"]
+        except Exception:
+            pass
+
+    if not API_KEY:
         st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
         st.stop()
 

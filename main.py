@@ -195,10 +195,13 @@ def Ai_Sec():
         st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
         st.stop()
 
-    os.environ["GEMINI_API_KEY"] = API_KEY
-    
-    # التعديل هنا: اعتماد التهيئة البسيطة التي تقرأ المفتاح من المتغير البيئي مباشرة
-    client = genai.Client()
+    # تهيئة الكلايند للعمل مع مفتاح Google Cloud / Vertex AI الخاص بك
+    client = genai.Client(
+        vertexai=True,
+        project="43482850970",
+        location="us-central1",
+        api_key=API_KEY
+    )
     MODEL_NAME = "gemini-1.5-flash"
 
     st.title("🤖 Ai Assistant")
@@ -264,7 +267,6 @@ def Ai_Sec():
             st.rerun()
         else:
             st.warning("Please enter a message or upload a file.")
-
            
 
 

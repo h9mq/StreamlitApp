@@ -196,9 +196,8 @@ def Ai_Sec():
         st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
         st.stop()
 
-    # التهيئة بالمكتبة الكلاسيكية المستقرة التي تقبل مفتاحك الـ AQ مباشرة
     genai.configure(api_key=API_KEY)
-    MODEL_NAME = "gemini-1.5-flash"
+    MODEL_NAME = "gemini-3.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(

@@ -241,10 +241,10 @@ def Ai_Sec():
                 except Exception as e:
                     reply = f"Error: {e}"
 
-        uploaded_file = st.file_uploader(
-        "Upload a file for the AI",
-        type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
-        accept_multiple_files=False,
+    uploaded_file = st.file_uploader(
+    "Upload a file for the AI",
+    type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
+    accept_multiple_files=False,
     )
 
     if uploaded_file is not None:

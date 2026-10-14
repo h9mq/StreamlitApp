@@ -197,7 +197,7 @@ def Ai_Sec():
 
     # التهيئة الصحيحة باستخدام مفتاح API حقيقي (يبدأ بـ AIza)
     client = genai.Client(api_key=API_KEY)
-    MODEL_NAME = "gemini-1.5-flash"
+    MODEL_NAME = "gemini-3.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(

@@ -3,6 +3,7 @@ import pandas as pd
 import time as t
 from google import genai
 from dotenv import load_dotenv
+import google.generativeai as genai
 import os
 
 if not st.user.is_logged_in:
@@ -195,9 +196,9 @@ def Ai_Sec():
         st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
         st.stop()
 
-    # التهيئة الصحيحة باستخدام مفتاح API حقيقي (يبدأ بـ AIza)
-    client = genai.Client(api_key=API_KEY)
-    MODEL_NAME = "gemini-3.5-flash"
+    # التهيئة بالمكتبة الكلاسيكية المستقرة التي تقبل مفتاحك الـ AQ مباشرة
+    genai.configure(api_key=API_KEY)
+    MODEL_NAME = "gemini-1.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(
@@ -208,20 +209,15 @@ def Ai_Sec():
         st.session_state.history = []
 
     def get_gemini_response(prompt, uploaded_file=None):
-        contents = [prompt]
-
+        model = genai.GenerativeModel(MODEL_NAME)
         if uploaded_file is not None:
-            contents.append(
-                genai.types.Part.from_bytes(
-                    data=uploaded_file.getvalue(),
-                    mime_type=uploaded_file.type,
-                )
-            )
-
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=contents,
-        )
+            file_data = {
+                "mime_type": uploaded_file.type,
+                "data": uploaded_file.getvalue()
+            }
+            response = model.generate_content([prompt, file_data])
+        else:
+            response = model.generate_content(prompt)
         return response.text or "The AI returned an empty response."
 
     for role, msg in st.session_state.history:

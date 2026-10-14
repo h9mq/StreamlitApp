@@ -195,9 +195,12 @@ def Ai_Sec():
         st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
         st.stop()
 
+    
     os.environ["GEMINI_API_KEY"] = API_KEY
+    os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "false"
+    
     client = genai.Client(api_key=API_KEY)
-    MODEL_NAME = "gemini-2.5-flash"
+    MODEL_NAME = "gemini-1.5-flash" 
 
     st.title("🤖 Ai Assistant")
     st.markdown(

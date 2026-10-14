@@ -3,3 +3,4 @@ streamlit[auth]
 pandas
 google-genai
 python-dotenv
+google-generativeai

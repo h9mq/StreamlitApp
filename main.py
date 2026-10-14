@@ -197,7 +197,7 @@ def Ai_Sec():
 
     os.environ["GEMINI_API_KEY"] = API_KEY
     client = genai.Client(api_key=API_KEY)
-    MODEL_NAME = "gemini-3.5-flash"
+    MODEL_NAME = "models/gemini-3.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(

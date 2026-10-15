@@ -199,7 +199,7 @@ def Ai_Sec():
     st.stop()
 
   client = genai.Client(api_key=API_KEY)
-  MODEL_NAME = "gemini-2.5-flash"
+  MODEL_NAME = "gemini-3.5-flash"
 
   st.title("🤖 Ai Assistant")
   st.markdown(

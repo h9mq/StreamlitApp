@@ -196,72 +196,68 @@ def Ai_Sec():
     st.stop()
 
   client = genai.Client(api_key=API_KEY)
-  MODEL_NAME = "gemini-2.5-flash"
-
+  MODEL_NAME = "gemini-3.5-flash"
 
   st.title("🤖 Ai Assistant")
   st.markdown(
-        "An Intelligent Assistant Powered By **Gemini** And **Tuwaiq Students**."
-    )
+      "An Intelligent Assistant Powered By **Gemini** And **Tuwaiq Students**."
+  )
 
-    if "history" not in st.session_state:
-        st.session_state.history = []
+  if "history" not in st.session_state:
+    st.session_state.history = []
 
-    def get_gemini_response(prompt, uploaded_file=None):
-        contents = [prompt]
-
-        if uploaded_file is not None:
-            contents.append(
-                genai.types.Part.from_bytes(
-                    data=uploaded_file.getvalue(),
-                    mime_type=uploaded_file.type,
-                )
-            )
-
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=contents,
-        )
-        return response.text or "The AI returned an empty response."
-
-    for role, msg in st.session_state.history:
-        if role == "user":
-            st.markdown(f"**You:** {msg}")
-        else:
-            st.markdown(f"**🤖 AI Assistant:** {msg}")
-
-    with st.form("ai_chat_form", clear_on_submit=True):
-        user_input = st.text_input("Type your message here...")
-        send = st.form_submit_button("Send")
-
-    uploaded_file = st.file_uploader(
-        "Upload a file for the AI",
-        type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
-        accept_multiple_files=False,
-    )
-
+  def get_gemini_response(prompt, uploaded_file=None):
+    contents = [prompt]
     if uploaded_file is not None:
-        st.caption(f"Attached: {uploaded_file.name}")
+      contents.append(
+          genai.types.Part.from_bytes(
+              data=uploaded_file.getvalue(),
+              mime_type=uploaded_file.type,
+          )
+      )
 
-        if uploaded_file.type.startswith("image/"):
-            st.image(uploaded_file, caption=uploaded_file.name)
+    response = client.models.generate_content(
+        model=MODEL_NAME,
+        contents=contents,
+    )
+    return response.text or "The AI returned an empty response."
 
-    if send:
-        if user_input.strip() or uploaded_file is not None:
-            prompt = user_input.strip() or "Describe this uploaded file."
+  for role, msg in st.session_state.history:
+    if role == "user":
+      st.markdown(f"**You:** {msg}")
+    else:
+      st.markdown(f"**🤖 AI Assistant:** {msg}")
 
-            st.session_state.history.append(("user", prompt))
+  with st.form("ai_chat_form", clear_on_submit=True):
+    user_input = st.text_input("Type your message here...")
+    send = st.form_submit_button("Send")
 
-            with st.spinner("AI Assistant is thinking..."):
-                try:
-                    reply = get_gemini_response(prompt, uploaded_file)
-                except Exception as e:
-                    reply = f"Error: {e}"
+  uploaded_file = st.file_uploader(
+      "Upload a file for the AI",
+      type=["pdf", "png", "jpg", "jpeg", "txt", "csv", "py"],
+      accept_multiple_files=False,
+  )
 
-            st.session_state.history.append(("bot", reply))
-            st.rerun()
-        else:
-            st.warning("Please enter a message or upload a file.")
+  if uploaded_file is not None:
+    st.caption(f"Attached: {uploaded_file.name}")
+    if uploaded_file.type.startswith("image/"):
+      st.image(uploaded_file, caption=uploaded_file.name)
+
+  if send:
+    if user_input.strip() or uploaded_file is not None:
+      prompt = user_input.strip() or "Describe this uploaded file."
+      st.session_state.history.append(("user", prompt))
+
+      with st.spinner("AI Assistant is thinking..."):
+        try:
+          reply = get_gemini_response(prompt, uploaded_file)
+        except Exception as e:
+          reply = f"Error: {e}"
+
+      st.session_state.history.append(("bot", reply))
+      st.rerun()
+    else:
+      st.warning("Please enter a message or upload a file.")
 
            
 

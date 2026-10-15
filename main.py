@@ -179,15 +179,25 @@ def calc():
             four_dvide()
 
 def Ai_Sec():
-    load_dotenv()
+    
+  API_KEY = None
+  try:
+    API_KEY = st.secrets.get("GEMINI_API_KEY")
+  except Exception:
+    pass
+
+  if not API_KEY:
     API_KEY = os.getenv("GEMINI_API_KEY")
 
-    if not API_KEY:
-        st.error("Missing GEMINI_API_KEY in .env file.")
-        st.stop()
+  if not API_KEY:
+    st.error(
+        "Missing GEMINI_API_KEY. Please add it to your local .env file or"
+        " Streamlit Secrets."
+    )
+    st.stop()
 
-    client = genai.Client(api_key=API_KEY)
-    MODEL_NAME = "gemini-3.5-flash"
+  client = genai.Client(api_key=API_KEY)
+  MODEL_NAME = "gemini-2.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(

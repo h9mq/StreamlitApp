@@ -179,7 +179,6 @@ def calc():
             four_dvide()
 
 def Ai_Sec():
-    
   API_KEY = None
   try:
     API_KEY = st.secrets.get("GEMINI_API_KEY")
@@ -198,6 +197,7 @@ def Ai_Sec():
 
   client = genai.Client(api_key=API_KEY)
   MODEL_NAME = "gemini-2.5-flash"
+
 
     st.title("🤖 Ai Assistant")
     st.markdown(

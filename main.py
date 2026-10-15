@@ -181,7 +181,10 @@ def calc():
 def Ai_Sec():
   API_KEY = None
   try:
-    API_KEY = st.secrets.get("GEMINI_API_KEY")
+    # Checks both root level and nested under [Gemini] section
+    API_KEY = st.secrets.get("GEMINI_API_KEY") or st.secrets.get(
+        "Gemini", {}
+    ).get("GEMINI_API_KEY")
   except Exception:
     pass
 
@@ -196,7 +199,7 @@ def Ai_Sec():
     st.stop()
 
   client = genai.Client(api_key=API_KEY)
-  MODEL_NAME = "gemini-3.5-flash"
+  MODEL_NAME = "gemini-2.5-flash"
 
   st.title("🤖 Ai Assistant")
   st.markdown(

@@ -3,7 +3,6 @@ import pandas as pd
 import time as t
 from google import genai
 from dotenv import load_dotenv
-import google.generativeai as genai
 import os
 
 if not st.user.is_logged_in:
@@ -184,20 +183,11 @@ def Ai_Sec():
     API_KEY = os.getenv("GEMINI_API_KEY")
 
     if not API_KEY:
-        try:
-            if "GEMINI_API_KEY" in st.secrets:
-                API_KEY = st.secrets["GEMINI_API_KEY"]
-            elif "Gemini" in st.secrets and "GEMINI_API_KEY" in st.secrets["Gemini"]:
-                API_KEY = st.secrets["Gemini"]["GEMINI_API_KEY"]
-        except Exception:
-            pass
-
-    if not API_KEY:
-        st.error("Missing GEMINI_API_KEY in .env file or Streamlit Secrets.")
+        st.error("Missing GEMINI_API_KEY in .env file.")
         st.stop()
 
-    genai.configure(api_key=API_KEY)
-    MODEL_NAME = "gemini-3.5-flash"  
+    client = genai.Client(api_key=API_KEY)
+    MODEL_NAME = "gemini-3.5-flash"
 
     st.title("🤖 Ai Assistant")
     st.markdown(
@@ -207,11 +197,32 @@ def Ai_Sec():
     if "history" not in st.session_state:
         st.session_state.history = []
 
+    def get_gemini_response(prompt, uploaded_file=None):
+        contents = [prompt]
+
+        if uploaded_file is not None:
+            contents.append(
+                genai.types.Part.from_bytes(
+                    data=uploaded_file.getvalue(),
+                    mime_type=uploaded_file.type,
+                )
+            )
+
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=contents,
+        )
+        return response.text or "The AI returned an empty response."
+
     for role, msg in st.session_state.history:
         if role == "user":
             st.markdown(f"**You:** {msg}")
         else:
             st.markdown(f"**🤖 AI Assistant:** {msg}")
+
+    with st.form("ai_chat_form", clear_on_submit=True):
+        user_input = st.text_input("Type your message here...")
+        send = st.form_submit_button("Send")
 
     uploaded_file = st.file_uploader(
         "Upload a file for the AI",
@@ -221,24 +232,9 @@ def Ai_Sec():
 
     if uploaded_file is not None:
         st.caption(f"Attached: {uploaded_file.name}")
+
         if uploaded_file.type.startswith("image/"):
             st.image(uploaded_file, caption=uploaded_file.name)
-
-    with st.form("ai_chat_form", clear_on_submit=True):
-        user_input = st.text_input("Type your message here...")
-        send = st.form_submit_button("Send")
-
-    def get_gemini_response(prompt, file_obj=None):
-        model = genai.GenerativeModel(MODEL_NAME)
-        if file_obj is not None:
-            file_data = {
-                "mime_type": file_obj.type,
-                "data": file_obj.getvalue()
-            }
-            response = model.generate_content([prompt, file_data])
-        else:
-            response = model.generate_content(prompt)
-        return response.text or "The AI returned an empty response."
 
     if send:
         if user_input.strip() or uploaded_file is not None:
@@ -246,7 +242,7 @@ def Ai_Sec():
 
             st.session_state.history.append(("user", prompt))
 
-            with st.spinner("AI Assistant Is Thinking..."):
+            with st.spinner("AI Assistant is thinking..."):
                 try:
                     reply = get_gemini_response(prompt, uploaded_file)
                 except Exception as e:
@@ -255,7 +251,8 @@ def Ai_Sec():
             st.session_state.history.append(("bot", reply))
             st.rerun()
         else:
-            st.warning("Please Enter a Message Or Upload a File.")
+            st.warning("Please enter a message or upload a file.")
+
            
 
 

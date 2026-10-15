@@ -199,8 +199,8 @@ def Ai_Sec():
   MODEL_NAME = "gemini-2.5-flash"
 
 
-    st.title("🤖 Ai Assistant")
-    st.markdown(
+  st.title("🤖 Ai Assistant")
+  st.markdown(
         "An Intelligent Assistant Powered By **Gemini** And **Tuwaiq Students**."
     )
 
